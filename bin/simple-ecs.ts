@@ -18,7 +18,6 @@ if ( !app.node.tryGetContext('gitCommitID') ) throw new Error('gitCommitID is no
 const stateful = new StatefulStack(app, `${envs.common.projectName}-StatefulStack-${envs.envName}`, envs, gitCommitID, {
   description: envs.common.projectName,
   env: {
-    account: envs.accountId,
     region: envs.region,
   },
 });

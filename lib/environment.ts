@@ -21,7 +21,6 @@ export interface CommonVariables {
 */
 export interface EnvironmentVariables {
   common: CommonVariables,
-  accountId: string,
   region: string,
   envName: string,
 };
@@ -38,13 +37,11 @@ const CommonVariablesSetting: CommonVariables = {
 const EnvironmentVariablesSetting: {[key:string]: EnvironmentVariables} = {
   [envs.PROD] : {
     common: CommonVariablesSetting,
-    accountId: "",
     region: "ap-northeast-1",
     envName: "prod"
   },
   [envs.STG] : {
     common: CommonVariablesSetting,
-    accountId: "",
     region: "ap-northeast-1",
     envName: "stg"
   },
