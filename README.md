@@ -5,7 +5,6 @@ simple な ECS サービス
 # 本 cdk で作成されるリソース
 
 - stateful スタック（rds,dynamoDB などデータを保持する必要のあるリソースとそれらの作成に前提となるリソースを作成する cloudformation スタック）
-  - ecr
   - vpc
 - stateless スタック（ecs タスク等、git 上のコードがあれば再作成可能なリソース※を作成する cloudformation スタック）
   - ecs 関連
@@ -27,8 +26,6 @@ simple な ECS サービス
 
 前提となる依存リソース
 
-## 周辺システム
-
 # Installation
 
 cdk にて各種リソースを作成しているので作成・更新には cdk が必要です
@@ -40,21 +37,16 @@ cdk にて各種リソースを作成しているので作成・更新には cdk
 3. typescript （TypeScript 2.7 以降）
 4. aws-cdk CLI
 
-## deploy
-
-1. cdk ディレクトリに node.js 依存パッケージをインストール（git clone した直後の初回のみ実行が必要です）
-
-```
-git clone ＜gitのurl＞
-cd ＜cloneしてできたディレクトリ＞/
-npm install
-```
-
-## リソース更新手順
+## リソース作成・更新手順
 
 以下のコマンドを実行
 
 ```
+# cdk ディレクトリに node.js 依存パッケージをインストール（git clone した直後の初回のみ実行が必要です）
+git clone ＜gitのurl＞
+cd ＜cloneしてできたディレクトリ＞/
+npm install
+
 # 環境変数代入（外部に公開したくない値だけコードに含めずデプロイ時に指定)
 export CERTARN="<ALBにつけるACMのARN>"
 export ALLOWIP="<接続を許可するIPアドレス>/<サブネットマスク>"
