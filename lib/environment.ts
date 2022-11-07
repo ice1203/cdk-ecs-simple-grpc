@@ -23,6 +23,27 @@ export interface EnvironmentVariables {
   common: CommonVariables,
   region: string,
   envName: string,
+  vpcConfig: {
+    vpcCidr: string,
+    natgwNum: number,
+  },
+  ecstaskConfig: {
+    SvcMemMib: number;
+    SvcCPU: number;
+    ContainerConfig: {
+      Variables: {[key: string]: any},
+      ContainerMemMib: number,
+      ContainerCPU: number,
+    },
+  },
+  ecsServiceConfig: {
+    AutoScalingConfig: {
+      minCapacity: number,
+      maxCapacity: number,
+      CpuTarget: number,
+      MemTarget: number,
+    },
+  },
 };
 
 /**
@@ -38,12 +59,56 @@ const EnvironmentVariablesSetting: {[key:string]: EnvironmentVariables} = {
   [envs.PROD] : {
     common: CommonVariablesSetting,
     region: "ap-northeast-1",
-    envName: "prod"
+    envName: "prod",
+    vpcConfig: {
+      vpcCidr: "10.0.0.0/16",
+      natgwNum: 0,
+    },
+    ecstaskConfig: {
+      SvcMemMib: 512,
+      SvcCPU: 256,
+      ContainerConfig: {
+        Variables: {
+        },
+        ContainerMemMib: 512,
+        ContainerCPU: 256,
+      },
+    },
+    ecsServiceConfig: {
+      AutoScalingConfig: {
+        minCapacity: 1,
+        maxCapacity: 1,
+        CpuTarget: 60,
+        MemTarget: 60,
+      },
+    },
   },
   [envs.STG] : {
     common: CommonVariablesSetting,
     region: "ap-northeast-1",
-    envName: "stg"
+    envName: "stg",
+    vpcConfig: {
+      vpcCidr: "10.1.0.0/16",
+      natgwNum: 1,
+    },
+    ecstaskConfig: {
+      SvcMemMib: 512,
+      SvcCPU: 256,
+      ContainerConfig: {
+        Variables: {
+        },
+        ContainerMemMib: 512,
+        ContainerCPU: 256,
+      },    
+    },
+    ecsServiceConfig: {
+      AutoScalingConfig: {
+        minCapacity: 1,
+        maxCapacity: 1,
+        CpuTarget: 60,
+        MemTarget: 60,
+      },
+    },
   },
 };
 

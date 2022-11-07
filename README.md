@@ -55,6 +55,10 @@ npm install
 以下のコマンドを実行
 
 ```
+# 環境変数代入（外部に公開したくない値だけコードに含めずデプロイ時に指定)
+export CERTARN="<ALBにつけるACMのARN>"
+export ALLOWIP="<接続を許可するIPアドレス>/<サブネットマスク>"
+
 # cdk diffで現状との差分確認
 cdk diff --all --profile ＜対象アカウントのプロファイル名＞ -c target=＜stg or prod＞ -c gitCommitID=$(git rev-parse HEAD)
 
