@@ -15,12 +15,15 @@ export class TargetgroupCreate {
       protocol: elb.ApplicationProtocol.HTTP,
       // protocolVersionにGRPCを指定
       protocolVersion: elb.ApplicationProtocolVersion.GRPC,
+      deregistrationDelay: Duration.minutes(1),
       healthCheck: {
         enabled: true,
         // /package.service/method　の形式でヘルスチェックパスを入力
         path: '/myapp.GreetingService/Hello',
         // grpcのリターンコードは0-99
         healthyGrpcCodes: '0',
+        interval: Duration.seconds(10),
+        healthyThresholdCount: 2,
       },
     });
   }
