@@ -23,6 +23,7 @@ export interface EnvironmentVariables {
   common: CommonVariables,
   region: string,
   envName: string,
+  subDomain: string,
   vpcConfig: {
     vpcCidr: string,
     natgwNum: number,
@@ -60,6 +61,7 @@ const EnvironmentVariablesSetting: {[key:string]: EnvironmentVariables} = {
     common: CommonVariablesSetting,
     region: "ap-northeast-1",
     envName: "prod",
+    subDomain: "test",
     vpcConfig: {
       vpcCidr: "10.0.0.0/16",
       natgwNum: 0,
@@ -87,6 +89,7 @@ const EnvironmentVariablesSetting: {[key:string]: EnvironmentVariables} = {
     common: CommonVariablesSetting,
     region: "ap-northeast-1",
     envName: "stg",
+    subDomain: "test",
     vpcConfig: {
       vpcCidr: "10.1.0.0/16",
       natgwNum: 1,

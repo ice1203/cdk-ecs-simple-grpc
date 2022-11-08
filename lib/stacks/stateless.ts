@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as environment from '../environment';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as route53 from 'aws-cdk-lib/aws-route53';
 
 import { IamCreate } from '../resources/iam'
 import { TargetgroupCreate } from '../resources/targetgroup'
@@ -10,6 +11,7 @@ import { CwlogGroupCreate } from '../resources/cloudwatchlogs'
 import { ElbCreate } from '../resources/elb'
 import { EcsTaskCreate } from '../resources/ecstask'
 import { EcsClusterSvcCreate } from '../resources/ecscluster-svc'
+import { R53recordCreate } from '../resources/route53'
 
 export class StatelessStack extends cdk.Stack {
   constructor(
@@ -23,10 +25,17 @@ export class StatelessStack extends cdk.Stack {
     super(scope, id, props);
 
     // アカウントID等外部に出したくない値を環境変数から読み込み
-    const certArn = process.env.CERTARN != null ? process.env.CERTARN : "";
     const allowip = process.env.ALLOWIP != null ? process.env.ALLOWIP : "";
     const allowips: string[] = [allowip];
 
+    // 依存リソース
+    const certArn = process.env.CERTARN != null ? process.env.CERTARN : "";
+    const domain = process.env.DOMAIN != null ? process.env.DOMAIN : "";
+    const hostedzoneid = process.env.HOSTEDZONEID != null ? process.env.HOSTEDZONEID : "";
+    const r53HostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'r53HostedZone', {
+      hostedZoneId: hostedzoneid,
+      zoneName: domain,
+    });
     // iam作成
     const iamRole = new IamCreate(this);
     // targetGroup作成
@@ -37,7 +46,7 @@ export class StatelessStack extends cdk.Stack {
       envName: envs.envName,
     });
     // elb作成
-    new ElbCreate(this,{
+    const alb = new ElbCreate(this,{
       projectName: envs.common.projectName,
       envName: envs.envName,
       vpc: serviceVpc,
@@ -45,6 +54,12 @@ export class StatelessStack extends cdk.Stack {
       targetGroup: targetgroup.ecsTask,
       certificateArn: certArn,
       allowSourceIPs: allowips,
+    });
+    // r53 record作成
+    new R53recordCreate(this,{
+      ecsTaskAlb: alb.ecsTaskAlb,
+      hostedzone: r53HostedZone,
+      domain: `${envs.subDomain}.${domain}`,
     });
 
     // cwlogs作成
