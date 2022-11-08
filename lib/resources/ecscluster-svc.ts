@@ -10,7 +10,7 @@ export interface EcsServiceProps {
   vpc: ec2.IVpc,
   ecsTaskDef: ecs.TaskDefinition,
   ecsTaskSG: ec2.SecurityGroup,
-  targetgroup: elb.ApplicationTargetGroup, 
+  targetgroup: elb.NetworkTargetGroup, 
   AutoScalingConfig: {
     minCapacity: number,
     maxCapacity: number,

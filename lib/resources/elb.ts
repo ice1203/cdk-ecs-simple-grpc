@@ -9,22 +9,22 @@ export interface ElbProps {
   envName: string;
   vpc: ec2.IVpc,
   securityGroup: ec2.SecurityGroup,
-  targetGroup: elb.ApplicationTargetGroup,
+  targetGroup: elb.NetworkTargetGroup,
   //logbucket: s3.IBucket,
   certificateArn: string,
   allowSourceIPs: string[],
 }
 export class ElbCreate {
-  public readonly ecsTaskAlb: elb.ApplicationLoadBalancer;
+  public readonly ecsTaskAlb: elb.NetworkLoadBalancer;
   constructor(
     scope: Construct,
     props: ElbProps
   ) {
-    this.ecsTaskAlb = new elb.ApplicationLoadBalancer(scope, 'ALB', {
+    this.ecsTaskAlb = new elb.NetworkLoadBalancer(scope, 'NLB', {
       vpc: props.vpc,
-      loadBalancerName: `${props.projectName}-alb-${props.envName}`,
+      loadBalancerName: `${props.projectName}-Nlb-${props.envName}`,
       internetFacing: true,
-      securityGroup: props.securityGroup,
+      //securityGroup: props.securityGroup,
       vpcSubnets: { subnets: props.vpc.publicSubnets },
       
     });
@@ -33,22 +33,12 @@ export class ElbCreate {
     // ecsTaskAlbリスナー作成
     this.ecsTaskAlb.addListener('TlsListener', { 
       port: 443,
+      alpnPolicy: elb.AlpnPolicy.HTTP2_ONLY,
       // grpcがhttp/2ベースで動く、かつ、http/2が事実上tls必須であるため、albでもtls設定必須
       certificates: [elb.ListenerCertificate.fromArn(props.certificateArn)],
-      protocol: elb.ApplicationProtocol.HTTPS,
+      protocol: elb.Protocol.TLS,
       sslPolicy: elb.SslPolicy.TLS12,
-      open: true,
-      defaultAction: elb.ListenerAction.fixedResponse(403, {
-       contentType: 'text/plain',
-       messageBody: 'Not authorized access.',
-      }),
-      //defaultAction: elb.ListenerAction.forward([targetGroup],)
-    }).addAction('response', {
-      priority: 10,
-      conditions:[
-        elb.ListenerCondition.sourceIps(props.allowSourceIPs),
-      ],
-      action: elb.ListenerAction.forward([props.targetGroup]),
+      defaultAction: elb.NetworkListenerAction.forward([props.targetGroup]),
     });
 
   }

@@ -5,7 +5,7 @@ import * as elb from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 
 export interface R53Props {
-  ecsTaskAlb: elb.ApplicationLoadBalancer;
+  ecsTaskAlb: elb.NetworkLoadBalancer;
   hostedzone: route53.IHostedZone,
   domain: string,
 }

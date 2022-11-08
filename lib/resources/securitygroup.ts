@@ -22,5 +22,9 @@ export class SecuritygroupCreate {
         securityGroupName: `${props.projectName}-ecstasksg-${props.envName}`,
         vpc: vpc,
     });
+    this.ecsTaskSG.addIngressRule(
+        ec2.Peer.ipv4(vpc.vpcCidrBlock),
+        ec2.Port.tcp(8080)
+    );    
   }
 }
