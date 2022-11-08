@@ -49,6 +49,9 @@ npm install
 
 # 環境変数代入（外部に公開したくない値だけコードに含めずデプロイ時に指定)
 export CERTARN="<ALBにつけるACMのARN>"
+export CFCERTARN="<ALBにつけるACMのARN>"
+export CERTARN="<ALBにつけるACMのARN>"
+export ALLOWIP="<接続を許可するIPアドレス>/<サブネットマスク>"
 export ALLOWIP="<接続を許可するIPアドレス>/<サブネットマスク>"
 
 # cdk diffで現状との差分確認
