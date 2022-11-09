@@ -3,6 +3,9 @@ package main
 import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	//"google.golang.org/grpc/codes"
+	//"google.golang.org/grpc/status"	
+	//"google.golang.org/genproto/googleapis/rpc/errdetails"
 	hellopb "mygrpc/pkg/grpc"
 	"fmt"
 	"net"
@@ -26,6 +29,12 @@ func (s *myServer) Hello(ctx context.Context, req *hellopb.HelloRequest) (*hello
 	return &hellopb.HelloResponse{
 		Message: fmt.Sprintf("Hello, %s!", req.GetName()),
 	}, nil
+	/* stat := status.New(codes.Unknown, "unknown error occurred")
+	stat, _ = stat.WithDetails(&errdetails.DebugInfo{
+		Detail: "detail reason of err",
+	})
+	err := stat.Err()
+	return nil, err*/
 }
 // HelloServerStreamメソッドの実際の処理
 func (s *myServer) HelloServerStream(req *hellopb.HelloRequest, stream hellopb.GreetingService_HelloServerStreamServer) error {
@@ -58,7 +67,24 @@ func (s *myServer) HelloClientStream(stream hellopb.GreetingService_HelloClientS
 		nameList = append(nameList, req.GetName())
 	}
 }
-
+//HelloBiStreams実際の処理
+func (s *myServer) HelloBiStreams(stream hellopb.GreetingService_HelloBiStreamsServer) error {
+	for {
+		req, err := stream.Recv()
+		if errors.Is(err, io.EOF) {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		message := fmt.Sprintf("Hello, %v!", req.GetName())
+		if err := stream.Send(&hellopb.HelloResponse{
+			Message: message,
+		}); err != nil {
+			return err
+		}
+	}
+}
 // 自作サービス構造体のコンストラクタを定義
 func NewMyServer() *myServer {
 	return &myServer{}
@@ -73,7 +99,10 @@ func main() {
 	}
 
 	// 2. gRPCサーバーを作成
-	s := grpc.NewServer()
+	s := grpc.NewServer(
+		//grpc.UnaryInterceptor(myUnaryServerInterceptor1),
+		grpc.StreamInterceptor(myStreamServerInterceptor1),
+	)
 
 	// 3. gRPCサーバーにGreetingServiceを登録
 	hellopb.RegisterGreetingServiceServer(s, NewMyServer())

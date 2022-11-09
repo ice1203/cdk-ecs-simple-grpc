@@ -2,7 +2,6 @@
 syntax = "proto3";
 
 // protoファイルから自動生成させるGoのコードの置き先
-// (詳細は4章にて)
 option go_package = "pkg/grpc";
 
 // packageの宣言
@@ -16,6 +15,8 @@ service GreetingService {
 	rpc HelloServerStream (HelloRequest) returns (stream HelloResponse);
 	// クライアントストリーミングRPC
 	rpc HelloClientStream (stream HelloRequest) returns (HelloResponse);
+	// 双方向ストリーミングRPC
+	rpc HelloBiStreams (stream HelloRequest) returns (stream HelloResponse);
 }
 
 // 型の定義
