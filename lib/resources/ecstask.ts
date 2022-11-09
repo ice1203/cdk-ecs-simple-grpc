@@ -40,6 +40,9 @@ export class EcsTaskCreate {
       cpu: props.ContainerConfig.ContainerCPU,
       memoryReservationMiB: props.ContainerConfig.ContainerMemMib,
       environment: props.ContainerConfig.Variables,
+      healthCheck: {
+        command: ["CMD-SHELL", "/bin/grpc_health_probe -addr=localhost:8080 || exit 1"]
+      },
       logging: ecs.LogDriver.awsLogs({
         streamPrefix: 'app/appContainer',
         logGroup: props.loggroup,

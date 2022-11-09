@@ -19,7 +19,7 @@ export class TargetgroupCreate {
       healthCheck: {
         enabled: true,
         // /package.service/method　の形式でヘルスチェックパスを入力
-        path: '/myapp.GreetingService/Hello',
+        path: '/grpc.health.v1.Health/Check',
         // grpcのリターンコードは0-99
         healthyGrpcCodes: '0',
         interval: Duration.seconds(10),

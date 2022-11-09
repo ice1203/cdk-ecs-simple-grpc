@@ -6,6 +6,9 @@ import (
 	//"google.golang.org/grpc/codes"
 	//"google.golang.org/grpc/status"	
 	//"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	hellopb "mygrpc/pkg/grpc"
 	"fmt"
 	"net"
@@ -24,6 +27,19 @@ type myServer struct {
 
 // Helloメソッドの実際の処理
 func (s *myServer) Hello(ctx context.Context, req *hellopb.HelloRequest) (*hellopb.HelloResponse, error) {
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		log.Println(md)
+	}
+
+	headerMD := metadata.New(map[string]string{"type": "unary", "from": "server", "in": "header"})
+	if err := grpc.SetHeader(ctx, headerMD); err != nil {
+		return nil, err
+	}
+
+	trailerMD := metadata.New(map[string]string{"type": "unary", "from": "server", "in": "trailer"})
+	if err := grpc.SetTrailer(ctx, trailerMD); err != nil {
+		return nil, err
+	}
 	// リクエストからnameフィールドを取り出して
 	// "Hello, [名前]!"というレスポンスを返す
 	return &hellopb.HelloResponse{
@@ -69,6 +85,19 @@ func (s *myServer) HelloClientStream(stream hellopb.GreetingService_HelloClientS
 }
 //HelloBiStreams実際の処理
 func (s *myServer) HelloBiStreams(stream hellopb.GreetingService_HelloBiStreamsServer) error {
+	if md, ok := metadata.FromIncomingContext(stream.Context()); ok {
+		log.Println(md)
+	}
+
+	headerMD := metadata.New(map[string]string{"type": "stream", "from": "server", "in": "header"})
+ 	// 本来ヘッダーを送るタイミングで送信
+	if err := stream.SetHeader(headerMD); err != nil {
+		return err
+	}
+
+	trailerMD := metadata.New(map[string]string{"type": "stream", "from": "server", "in": "trailer"})
+	stream.SetTrailer(trailerMD)
+	
 	for {
 		req, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
@@ -106,6 +135,11 @@ func main() {
 
 	// 3. gRPCサーバーにGreetingServiceを登録
 	hellopb.RegisterGreetingServiceServer(s, NewMyServer())
+
+	// healthcheckの導入
+	healthSrv := health.NewServer()
+	healthpb.RegisterHealthServer(s, healthSrv)
+	healthSrv.SetServingStatus("mygrpc", healthpb.HealthCheckResponse_SERVING)
 
 	// 4. サーバーリフレクションの設定
 	reflection.Register(s)	
