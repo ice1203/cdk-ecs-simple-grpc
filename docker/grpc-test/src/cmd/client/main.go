@@ -8,8 +8,10 @@ import (
 	"bufio"
 	"errors"
 	"io"
+	"crypto/tls"
+	"crypto/x509"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/metadata"
 	_ "google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -28,13 +30,33 @@ func main() {
 	scanner = bufio.NewScanner(os.Stdin)
 
 	// 2. gRPCサーバーとのコネクションを確立
-	address := "localhost:8080"
-	conn, err := grpc.Dial(
-		address,
+	fmt.Println("Please enter Destination Domain. e.g.:app.example.com:443")
+	scanner.Scan()
+	address := scanner.Text()
+	// ローカルテストしたい場合はtrueにする
+	insecure := false
 
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
-	)
+	var opts []grpc.DialOption
+	if address != "" {
+			opts = append(opts, grpc.WithAuthority(address))
+	}
+
+	if insecure {
+		opts = append(opts, grpc.WithInsecure())
+	} else {
+		systemRoots, err := x509.SystemCertPool()
+		if err != nil {
+			log.Fatal("systemCert failed.")
+			return
+		}
+		cred := credentials.NewTLS(&tls.Config{
+			RootCAs: systemRoots,
+		})
+		opts = append(opts, grpc.WithTransportCredentials(cred))
+	}
+
+	conn, err := grpc.Dial(address, opts...)
+
 	if err != nil {
 		log.Fatal("Connection failed.")
 		return
