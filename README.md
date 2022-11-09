@@ -2,29 +2,13 @@
 
 simple な ECS サービス
 
-# 本 cdk で作成されるリソース
-
-- stateful スタック（rds,dynamoDB などデータを保持する必要のあるリソースとそれらの作成に前提となるリソースを作成する cloudformation スタック）
-  - vpc
-- stateless スタック（ecs タスク等、git 上のコードがあれば再作成可能なリソース※を作成する cloudformation スタック）
-  - ecs 関連
-    - ecs クラスタ
-    - ecs サービス定義
-    - ecs タスク定義
-    - ecs autoscaling 定義
-    - ecs タスク用セキュリティグループと IAM ロール
-    - ecs タスク用 cloudwatchlogs
-  - alb 関連
-    - alb
-    - ターゲットグループ
-    - リスナー
-    - alb 用セキュリティグループ
-
-※cloudwatchlogs など単純なログで保持するデータが他リソースに依存しないのであれば RemovalPolicy で RETAIN にした上でここに含める
-
 # Requirement
 
 前提となる依存リソース
+
+- 適当なドメインを用意
+- Route53 にて 上記ドメインの Hosted Zone の作成
+- ACM にてサービスドメイン用の証明書発行
 
 # Installation
 
@@ -49,9 +33,8 @@ npm install
 
 # 環境変数代入（外部に公開したくない値だけコードに含めずデプロイ時に指定)
 export CERTARN="<ALBにつけるACMのARN>"
-export CFCERTARN="<ALBにつけるACMのARN>"
-export CERTARN="<ALBにつけるACMのARN>"
-export ALLOWIP="<接続を許可するIPアドレス>/<サブネットマスク>"
+export DOMAIN="<サブドメインを含まないドメイン（例：app.example.comならexample.com>"
+export HOSTEDZONEID="<Route53のHostedzoneID>"
 export ALLOWIP="<接続を許可するIPアドレス>/<サブネットマスク>"
 
 # cdk diffで現状との差分確認
