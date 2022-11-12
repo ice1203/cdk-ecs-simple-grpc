@@ -36,13 +36,10 @@ export class EcsTaskCreate {
 
     // コンテナ定義
     const appContainer = this.ecsTaskDef.addContainer('appContainer', {
-      image: ecs.ContainerImage.fromAsset("./docker/grpc-test/"),
+      image: ecs.ContainerImage.fromAsset("./docker/nginx/"),
       cpu: props.ContainerConfig.ContainerCPU,
       memoryReservationMiB: props.ContainerConfig.ContainerMemMib,
       environment: props.ContainerConfig.Variables,
-      healthCheck: {
-        command: ["CMD-SHELL", "/bin/grpc_health_probe -addr=localhost:8080 || exit 1"]
-      },
       logging: ecs.LogDriver.awsLogs({
         streamPrefix: 'app/appContainer',
         logGroup: props.loggroup,
