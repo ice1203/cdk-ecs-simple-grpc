@@ -11,7 +11,6 @@ export interface ElbProps {
   securityGroup: ec2.SecurityGroup,
   targetGroup: elb.NetworkTargetGroup,
   //logbucket: s3.IBucket,
-  certificateArn: string,
   allowSourceIPs: string[],
 }
 export class ElbCreate {
@@ -31,13 +30,9 @@ export class ElbCreate {
     //ecsTaskAlbログ出力設定
     //this.ecsTaskAlb.logAccessLogs(logbucket, props.ecsTaskAlbName);
     // ecsTaskAlbリスナー作成
-    this.ecsTaskAlb.addListener('TlsListener', { 
+    this.ecsTaskAlb.addListener('tcpListener', { 
       port: 443,
-      alpnPolicy: elb.AlpnPolicy.HTTP2_ONLY,
-      // grpcがhttp/2ベースで動く、かつ、http/2が事実上tls必須であるため、albでもtls設定必須
-      certificates: [elb.ListenerCertificate.fromArn(props.certificateArn)],
-      protocol: elb.Protocol.TLS,
-      sslPolicy: elb.SslPolicy.TLS12,
+      protocol: elb.Protocol.TCP,
       defaultAction: elb.NetworkListenerAction.forward([props.targetGroup]),
     });
 

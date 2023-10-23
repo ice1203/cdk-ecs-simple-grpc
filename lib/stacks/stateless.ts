@@ -52,14 +52,7 @@ export class StatelessStack extends cdk.Stack {
       vpc: serviceVpc,
       securityGroup: securitygroup.albSG,
       targetGroup: targetgroup.ecsTask,
-      certificateArn: certArn,
       allowSourceIPs: allowips,
-    });
-    // r53 record作成
-    new R53recordCreate(this,{
-      ecsTaskAlb: alb.ecsTaskAlb,
-      hostedzone: r53HostedZone,
-      domain: `${envs.subDomain}.${domain}`,
     });
 
     // cwlogs作成
