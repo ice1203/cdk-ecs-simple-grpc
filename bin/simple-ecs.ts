@@ -27,7 +27,7 @@ const stateful = new StatefulStack(app, `${envs.common.projectName}-StatefulStac
 cdk.Tags.of(stateful).add('iac','cdk');
 
 // statelessなリソースを作成するスタック
-const stateless = new StatelessStack(app, `${envs.common.projectName}-StatelessStack-${envs.envName}`, envs, gitCommitID, stateful.ServiceVpc, {
+const stateless = new StatelessStack(app, `${envs.common.projectName}-StatelessStack-${envs.envName}`, stateful.ServiceVpc, {
   description: envs.common.projectName,
   env: {
     region: envs.region,
