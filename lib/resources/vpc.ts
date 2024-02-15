@@ -1,6 +1,6 @@
-import { Stack, StackProps, Duration, RemovalPolicy, CfnOutput } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { aws_ec2 } from 'aws-cdk-lib';
 
 export interface VpcProps {
   projectName: string;
@@ -18,7 +18,7 @@ export class VpcCreate {
     // VPC設定
     this.vpc = new ec2.Vpc(scope, 'myVPC', {
       vpcName: `${props.projectName}-vpc-${props.envName}`,
-      cidr: props.vpccidr,
+      ipAddresses: aws_ec2.IpAddresses.cidr(props.vpccidr),
       natGateways: props.natgatewayNum,
       vpnGateway: false,
       enableDnsHostnames: true,

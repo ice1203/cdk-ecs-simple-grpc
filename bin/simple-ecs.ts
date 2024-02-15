@@ -11,13 +11,8 @@ const target: environment.Environments = app.node.tryGetContext('target') as env
 if(!target || !environment.variablesOf(target)) throw new Error('Invalid target environment');
 const envs = environment.variablesOf(target);
 
-//ContextからgitcommitID取得
-const gitCommitID: string = app.node.tryGetContext('gitCommitID');
-//gitcommitIDが定義されてない場合エラー !で否定,空文字列の場合falseとなることを利用
-if ( !app.node.tryGetContext('gitCommitID') ) throw new Error('gitCommitID is not exsits. please check readme.')
-
 // statefulなリソースを作成するスタック
-const stateful = new StatefulStack(app, `${envs.common.projectName}-StatefulStack-${envs.envName}`, envs, gitCommitID, {
+const stateful = new StatefulStack(app, `${envs.common.projectName}-StatefulStack-${envs.envName}`, envs, {
   description: envs.common.projectName,
   env: {
     region: envs.region,

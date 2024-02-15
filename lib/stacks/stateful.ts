@@ -6,7 +6,7 @@ import { VpcCreate } from '../resources/vpc'
 
 export class StatefulStack extends cdk.Stack {
   public readonly ServiceVpc: ec2.Vpc;
-  constructor(scope: Construct, id: string, envs: environment.EnvironmentVariables, gitCommitID:string, props: cdk.StackProps) {
+  constructor(scope: Construct, id: string, envs: environment.EnvironmentVariables, props: cdk.StackProps) {
     super(scope, id, props);
     // vpc作成
     this.ServiceVpc = new VpcCreate(this, {
@@ -16,10 +16,5 @@ export class StatefulStack extends cdk.Stack {
       vpccidr: envs.vpcConfig.vpcCidr,
       natgatewayNum: envs.vpcConfig.natgwNum,
     }).vpc
-    //本スタックのoutputパラメータとしてデプロイしたときのgitコミットIDを付与
-    new cdk.CfnOutput(this, 'gitCommitID',{
-      value: gitCommitID,
-      description: 'The commit ID when this stack was deployed.',
-    });
   }
 }

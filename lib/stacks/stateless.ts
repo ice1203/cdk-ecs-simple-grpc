@@ -55,8 +55,10 @@ export class StatelessStack extends cdk.Stack {
     // ECSTaskExecutionRole作成
     const executionRole = new aws_iam.Role(this, 'ExecutionRole', {
       assumedBy: new aws_iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      managedPolicies: [
+        aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSTaskExecutionRolePolicy'),
+      ],
     });
-
 
     /****************
       ECS
