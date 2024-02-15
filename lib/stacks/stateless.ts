@@ -162,14 +162,14 @@ export class StatelessStack extends cdk.Stack {
     });
 
     // ecs autoscaling定義
-    const scalableTarget = ecsTaskService.autoScaleTaskCount({
+    /*const scalableTarget = ecsTaskService.autoScaleTaskCount({
       minCapacity: 1,
       maxCapacity: 2,
     });
     
     scalableTarget.scaleOnCpuUtilization('CpuScaling', {
       targetUtilizationPercent: 50,
-    });
+    });*/
 
 
     /****************
